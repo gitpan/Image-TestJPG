@@ -18,6 +18,7 @@ testJPG(inBuffer, buflen)
 		char* inBuffer
 		int		buflen
 	CODE:
+
 	struct my_error_mgr {
   	struct jpeg_error_mgr pub;
   	jmp_buf setjmp_buffer;
@@ -25,20 +26,14 @@ testJPG(inBuffer, buflen)
 
 	typedef struct my_error_mgr * my_error_ptr;
 
-	METHODDEF(void)
-	my_output_message (j_common_ptr cinfo) {
-			/* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
-		my_error_ptr myerr = (my_error_ptr) cinfo->err;
-			/* Return control to the setjmp point */
-		longjmp(myerr->setjmp_buffer, 1);
-	}
+	// definitions
+	extern void my_output_message(j_common_ptr cinfo);
+  extern void jpeg_my_src(j_decompress_ptr cinfo, char *mybuffer, 
+		size_t length);
 
 	struct jpeg_decompress_struct cinfo;
 	struct my_error_mgr jerr;
-	struct stat filestats;
 	
-		// pointer to my buffer for reading stuff in.
-	char *mybuffer = 0;
 		// this buffer is for libjpeg
 	JSAMPARRAY buffer;
 		// other crap used by libjpeg

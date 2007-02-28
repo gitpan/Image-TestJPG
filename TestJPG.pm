@@ -24,7 +24,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw();
 
-our $VERSION = '0.9';
+our $VERSION = '1.0';
 
 bootstrap Image::TestJPG $VERSION;
 
@@ -45,7 +45,8 @@ Image::TestJPG - Test the validity of JPEG image streams.
 
   # read data from a file
  open(JPEG, "<$file") or die "Can't open $file : $!\n";
- my $jpgData = <JPEG>;
+ binmode JPEG;
+ my $jpgData = do { local $/; <JPEG> };
  close(JPEG);
 	
   # test the data
@@ -78,11 +79,11 @@ Image::TestJPG - Test the validity of JPEG image streams.
 
 =head1 AUTHOR
 
- Jason Hudgins <jason@netfist.com>
+ Jason Hudgins <jasonlee@spy.net>
 
 =head1 COPYRIGHT
 
- Copyright (c) 2003 Jason Hudgins.  All rights reserved.
+ Copyright (c) 2007 Jason Hudgins.  All rights reserved.
  This program is free software; you can redistribute it
  and/or modify it under the same terms as Perl itself.
 

@@ -19,6 +19,14 @@
 #include "jpeglib.h"
 #include "jerror.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <setjmp.h>
+#include <jpeglib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 /* Expanded data source object for stdio input */
 
@@ -213,4 +221,19 @@ jpeg_my_src (j_decompress_ptr cinfo, char *mybuffer, size_t length)
   src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
   src->pub.next_input_byte = NULL; /* until buffer loaded */
 
+}
+
+struct my_error_mgr {
+	struct jpeg_error_mgr pub;
+	jmp_buf setjmp_buffer;
+};
+
+typedef struct my_error_mgr * my_error_ptr;
+
+GLOBAL(void)
+my_output_message (j_common_ptr cinfo) {
+	/* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
+	my_error_ptr myerr = (my_error_ptr) cinfo->err;
+	/* Return control to the setjmp point */
+	longjmp(myerr->setjmp_buffer, 1);
 }
